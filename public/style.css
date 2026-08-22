@@ -226,6 +226,20 @@ html, body {
   overflow: hidden;
 }
 
+/* Big featured area used only while someone is sharing their screen */
+.screen-stage {
+  flex: 1;
+  display: flex;
+  gap: 12px;
+  padding: 20px 20px 0;
+  min-height: 0;
+}
+.screen-stage .tile {
+  flex: 1;
+  aspect-ratio: auto;
+  min-width: 0;
+}
+
 .video-grid {
   flex: 1;
   display: grid;
@@ -234,7 +248,20 @@ html, body {
   padding: 20px;
   overflow-y: auto;
   align-content: start;
+  transition: flex .15s;
 }
+
+/* When a screen is featured above, shrink the grid into a thumbnail strip */
+.video-grid.thumbs-row {
+  flex: 0 0 150px;
+  grid-template-columns: none;
+  grid-auto-flow: column;
+  grid-auto-columns: 220px;
+  overflow-x: auto;
+  overflow-y: hidden;
+  padding: 14px 20px;
+}
+.video-grid.thumbs-row .tile { aspect-ratio: 16 / 10; }
 
 .tile {
   position: relative;
@@ -244,9 +271,42 @@ html, body {
   aspect-ratio: 16 / 10;
   border: 2px solid transparent;
   transition: border-color .12s;
+  cursor: pointer;
 }
 .tile.speaking { border-color: var(--accent-warm); }
 .tile.screen { aspect-ratio: 16 / 9; }
+
+/* Hover hint: shows a clickable "expand" icon on thumbnails, and a "shrink"
+   icon on whatever is currently featured big, so it's obvious both actions
+   are possible. */
+.tile-hint {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  opacity: 0;
+  transition: opacity .15s, background .15s;
+  pointer-events: none;
+}
+.tile:hover .tile-hint {
+  opacity: 1;
+  background: #00000060;
+}
+.tile-hint svg {
+  width: 26px;
+  height: 26px;
+  stroke: #fff;
+  fill: none;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  filter: drop-shadow(0 1px 3px #00000090);
+}
+.tile-hint .icon-shrink { display: none; }
+.screen-stage .tile .tile-hint .icon-expand { display: none; }
+.screen-stage .tile .tile-hint .icon-shrink { display: block; }
 
 .tile video {
   width: 100%;
@@ -256,6 +316,9 @@ html, body {
   background: var(--bg-tile);
 }
 .tile.screen video { object-fit: contain; background: #000; }
+
+.tile:fullscreen { border-radius: 0; }
+.tile:fullscreen video { object-fit: contain; background: #000; }
 
 .tile-label {
   position: absolute;
